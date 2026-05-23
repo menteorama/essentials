@@ -14,11 +14,17 @@ That's it. Five skills, ready to use.
 
 ## What's Inside
 
-### `/careful` — Destructive Command Guardrails
+### `/careful` — Safety Guardrails (v2.0)
 
-Catches `rm -rf`, `DROP TABLE`, `git push --force`, `git reset --hard`, and other commands that ruin your day. Warns you before Claude executes them. Allows safe deletions (node_modules, .next, dist) automatically.
+Two hooks that protect you from three categories of disaster:
 
-**How it works:** A PreToolUse hook intercepts Bash commands and pattern-matches against dangerous operations. No config needed — it just works.
+**Command protection** — Catches `rm -rf`, `DROP TABLE`, `git push --force`, `git reset --hard`, `git clean -f`, `curl | bash`, `chmod 777`, accidental `npm publish`, and more. Allows safe deletions (node_modules, .next, dist) automatically.
+
+**File protection** — Warns before editing `.env` files, SSH keys, certificates, credentials, `.git/` internals, and anything in `secrets/` directories.
+
+**Secrets detection** — Scans both commands and file content for AWS keys, GitHub tokens, API keys (sk-*), Slack tokens, private key blocks, and database connection strings with embedded passwords.
+
+**How it works:** Two PreToolUse hooks — one for Bash commands, one for Write/Edit operations. No config needed — they just work.
 
 ### `/investigate` — Root Cause Debugging
 
