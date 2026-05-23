@@ -47,6 +47,9 @@ run_case "aws key in command asks" "$CAREFUL_HOOK" '{"command":"export AWS_ACCES
 run_case "github token in command asks" "$CAREFUL_HOOK" '{"command":"echo ghp_123456789012345678901234567890123456"}' "ask"
 run_case "api key in command asks" "$CAREFUL_HOOK" '{"command":"echo sk-123456789012345678901234"}' "ask"
 run_case "slack token in command asks" "$CAREFUL_HOOK" '{"command":"echo xoxb-123456789-abcdef"}' "ask"
+run_case "path traversal via safe name asks" "$CAREFUL_HOOK" '{"command":"rm -rf node_modules/../../src"}' "ask"
+run_case "split flags rm -r -f asks" "$CAREFUL_HOOK" '{"command":"rm -r -f important_data"}' "ask"
+run_case "split flags rm -f -r asks" "$CAREFUL_HOOK" '{"command":"rm -f -r important_data"}' "ask"
 run_case "malformed json allows" "$CAREFUL_HOOK" '{"cmd":"rm -rf tmp"}' "allow"
 
 run_case "env file asks" "$FILES_HOOK" '{"file_path":".env","content":"X=1"}' "ask"

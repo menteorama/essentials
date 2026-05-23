@@ -25,7 +25,7 @@
    - `claude plugin validate .claude-plugin/plugin.json` passes
    - `claude plugin validate .claude-plugin/marketplace.json` passes
 5. Verified local install flow with the current Claude CLI:
-   - `claude plugin marketplace add /Users/dsalgado/menteorama-essentials/.claude-plugin/marketplace.json --scope local`
+   - `claude plugin marketplace add ./.claude-plugin/marketplace.json --scope local`
    - `claude plugin install menteorama-essentials@menteorama-essentials --scope local`
    - `claude plugin list` shows the plugin installed and enabled
 6. Updated README install instructions to match the current CLI model (`marketplace add` + `plugin install`) instead of the obsolete `plugin add` wording.

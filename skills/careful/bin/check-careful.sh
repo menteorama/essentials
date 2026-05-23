@@ -48,7 +48,9 @@ SAFE_PATTERNS=(
 )
 
 for safe in "${SAFE_PATTERNS[@]}"; do
-  if echo "$COMMAND" | grep -qE "^rm(\s+-[a-zA-Z-]+)*\s+(([./[:alnum:]_-]+/)?${safe}([/[:alnum:]_.-]*)?\s*)+$"; then
+  # Match safe artifact names but reject path traversal (../)
+  if echo "$COMMAND" | grep -qE "^rm(\s+-[a-zA-Z-]+)*\s+(([./[:alnum:]_-]+/)?${safe}([/[:alnum:]_.-]*)?\s*)+$" \
+     && ! echo "$COMMAND" | grep -qE '\.\.'; then
     echo '{"permissionDecision":"allow"}'
     exit 0
   fi
@@ -61,8 +63,13 @@ warn() {
 }
 
 # ── Recursive delete ────────────────────────────────────────────────────
+# Catches: rm -rf, rm -fr, rm -r -f, rm -f -r, rm --recursive -f, etc.
 if echo "$COMMAND" | grep -qE 'rm\s+(-[a-zA-Z]*r[a-zA-Z]*f|--recursive|-rf|-fr)\s'; then
   warn "DESTRUCTIVE: recursive delete detected (rm -rf). This permanently removes files."
+fi
+if echo "$COMMAND" | grep -qE 'rm\s+(-[a-zA-Z]*\s+)*-[a-zA-Z]*r[a-zA-Z]*\s+(-[a-zA-Z]*\s+)*-[a-zA-Z]*f' \
+   || echo "$COMMAND" | grep -qE 'rm\s+(-[a-zA-Z]*\s+)*-[a-zA-Z]*f[a-zA-Z]*\s+(-[a-zA-Z]*\s+)*-[a-zA-Z]*r'; then
+  warn "DESTRUCTIVE: recursive delete detected (rm -r -f). This permanently removes files."
 fi
 
 # rm -rf targeting root, home, or system directories
