@@ -2,7 +2,7 @@
 
 **5 free skills for Claude Code.** Safety guardrails, structured debugging, product stress-testing, code principles, and AI co-creation philosophy.
 
-Built by [Menteorama Studio](https://menteorama.co) — an AI integration studio that ships with Claude Code every day.
+Built by [Menteorama Studio](https://studio.menteorama.co) — an AI integration studio that ships with Claude Code every day.
 
 ## Install
 
