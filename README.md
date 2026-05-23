@@ -7,10 +7,11 @@ Built by [Menteorama Studio](https://studio.menteorama.co) — an AI integration
 ## Install
 
 ```bash
-claude plugin add menteorama/essentials
+claude plugin marketplace add menteorama/essentials --sparse .claude-plugin
+claude plugin install menteorama-essentials@menteorama-essentials
 ```
 
-That's it. Five skills, ready to use.
+Two commands. Five skills, ready to use.
 
 ## What's Inside
 

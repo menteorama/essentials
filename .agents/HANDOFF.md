@@ -5,67 +5,69 @@
 
 ## Active Handoff
 
-**From:** claude
-**To:** codex, gemini
+**From:** codex
+**To:** claude
 **Time:** 2026-05-23
 **Status:** ready
 
 ### What I Did
 
-1. **Created menteorama/essentials** — public Claude Code plugin with 5 free skills
-2. **Built careful v2.0** — upgraded from basic rm-rf check to full safety guardrails:
-   - `check-careful.sh` — Bash interceptor: destructive commands, dangerous operations, secrets in commands
-   - `check-files.sh` — Write/Edit interceptor: protected files, protected dirs, secrets in file content
-3. **Wrote marketing README** — serves as storefront with Brain Kit funnel CTA
-4. **Created launch content** — Reddit post + Twitter thread in `marketing/launch-posts.md`
-5. **Published journal post** — studio.menteorama.co with bilingual content, fixed OG tags + social previews
+1. Tested both hook scripts with a reusable harness at `scripts/test-hooks.sh`.
+2. Hardened JSON string extraction in both hooks so they now handle:
+   - escaped quotes
+   - embedded newlines
+   - whitespace around JSON separators
+3. Closed real bypasses found during testing:
+   - quoted Bash commands were being truncated before dangerous segments
+   - top-level `.git/*`, `secrets/*`, and `private/*` paths were not protected
+   - nested safe artifact deletes like `rm -rf ./apps/web/dist` were no longer whitelisted after hardening
+4. Verified the plugin manifests:
+   - `claude plugin validate .claude-plugin/plugin.json` passes
+   - `claude plugin validate .claude-plugin/marketplace.json` passes
+5. Verified local install flow with the current Claude CLI:
+   - `claude plugin marketplace add /Users/dsalgado/menteorama-essentials/.claude-plugin/marketplace.json --scope local`
+   - `claude plugin install menteorama-essentials@menteorama-essentials --scope local`
+   - `claude plugin list` shows the plugin installed and enabled
+6. Updated README install instructions to match the current CLI model (`marketplace add` + `plugin install`) instead of the obsolete `plugin add` wording.
 
 ### What You Need to Do
 
-#### Codex (Executor)
-1. **Test hook scripts** — Run `check-careful.sh` and `check-files.sh` with crafted JSON inputs to verify:
-   - All destructive patterns trigger warnings (positive cases)
-   - Safe operations pass through (negative cases — especially safe delete exceptions like node_modules)
-   - Edge cases: commands with quotes, multi-line commands, mixed case SQL
-   - Secrets detection: verify each pattern (AKIA, ghp_, sk-, xox, private key blocks, connection strings)
-   - File protection: verify .env, .pem, .git/ paths trigger, normal files pass
-2. **Create test harness** — A simple test script that pipes JSON to each hook and asserts output
-3. **Verify plugin structure** — Ensure `claude plugin add menteorama/essentials` works from a clean install
-
-#### Gemini (Validator)
-1. **Security review of hook scripts** — Check for:
-   - Regex bypass vectors (can a destructive command sneak past the patterns?)
-   - False positives that would annoy users (legitimate commands incorrectly flagged)
-   - JSON parsing robustness (what happens with malformed input?)
-   - Shell injection risks in the hooks themselves
-2. **README review** — Check for broken links, accuracy of claims, marketing tone
-3. **Audit public repo** — Ensure no internal URLs, API keys, or menteorama-specific paths leaked
+1. Review whether you want to keep the Perl-based extractor.
+   - It is still zero-dependency on Mac/Linux in practice, but it is no longer “bash + coreutils only.”
+   - If that matters for the plugin promise, replace it with another universally-available parser strategy.
+2. Decide whether to keep the README’s GitHub marketplace example as-is or make it more explicit after you test the GitHub-hosted flow outside this local checkout.
+   - I verified local marketplace install cleanly.
+   - I did not verify the full remote GitHub marketplace flow from a brand-new machine/session.
+3. If you want executable-bit portability for the harness script, set it in git from your side. This environment would not let me change the mode bit in-place.
 
 ### Files Changed
 
 | File | Change |
 |------|--------|
-| `skills/careful/SKILL.md` | Rewritten — v2.0 with 2 hooks, expanded docs |
-| `skills/careful/bin/check-careful.sh` | Rewritten — destructive commands + secrets detection |
-| `skills/careful/bin/check-files.sh` | NEW — file protection + secrets in content |
-| `README.md` | Rewritten — marketing storefront with Brain Kit funnel |
-| `marketing/launch-posts.md` | NEW — Reddit + Twitter launch content |
+| `skills/careful/bin/check-careful.sh` | Replaced fragile `grep` parsing with escaped-string extraction; preserved safe-delete behavior while closing bypasses |
+| `skills/careful/bin/check-files.sh` | Same extraction hardening; added top-level protected path coverage |
+| `scripts/test-hooks.sh` | NEW — 34-case hook test harness |
+| `README.md` | Updated install instructions for current Claude CLI |
 
 ### Context You Need
 
-- This is a **PUBLIC** repo. Every file is visible to the world.
-- The hooks use JSON parsing via `grep -o` + `sed` — no jq dependency (keeps it zero-dep)
-- Hook output format: `{"permissionDecision":"allow"}` or `{"permissionDecision":"ask","message":"..."}`
-- The `warn()` function handles JSON escaping of double quotes in messages
-- Safe exceptions list (node_modules, .next, etc.) is checked BEFORE destructive patterns
-- `--force-with-lease` is explicitly allowed (only raw `--force` / `-f` triggers warning)
+- Harness coverage includes positive, negative, and edge cases for:
+  - destructive Bash commands
+  - safe exceptions
+  - mixed-case SQL
+  - secrets in commands
+  - protected file paths
+  - secrets in file content
+  - malformed JSON fallthrough
+- Final harness result: `34 passed, 0 failed`
+- Current installed CLI syntax on this machine uses `claude plugin install`, not `claude plugin add`
+- `claude plugin marketplace add` with a relative manifest path was misinterpreted as a GitHub repo slug; absolute local path worked
 
 ### Warnings
 
-- **JSON parsing is fragile** — `grep -o` pattern matching on JSON fields. Works for Claude Code's tool input format but not a general JSON parser. Known limitation, acceptable for this use case.
-- **No jq dependency** — intentional. Plugin must work on any Mac/Linux with just bash + coreutils.
-- **Multi-line commands** — the hooks read `command` as a single string. Multi-line heredocs or scripts piped via bash may not be fully parsed.
-- **Regex overlap** — some patterns (like `rm -rf`) have both a general check and a critical check (targeting / or ~). The critical check runs second but both can't fire (first match exits).
+- `marketing/` was already untracked when I started; I left it alone.
+- `scripts/test-hooks.sh` is present and works via `bash scripts/test-hooks.sh`, but I could not set the executable bit due filesystem restrictions in this environment.
+- The local marketplace verification required access to `~/.claude`; I used elevated execution for that check.
 
 ---
 

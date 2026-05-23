@@ -4,11 +4,28 @@
 # Returns JSON with permissionDecision: "allow" or "ask"
 
 set -euo pipefail
+export LC_ALL=C
+
+extract_json_string() {
+  local field="$1"
+  printf '%s' "$INPUT" | FIELD="$field" perl -0ne '
+    my $field = $ENV{FIELD};
+    if (/"\Q$field\E"\s*:\s*"((?:\\.|[^"\\])*)"/s) {
+      my $value = $1;
+      $value =~ s/\\n/\n/g;
+      $value =~ s/\\r/\r/g;
+      $value =~ s/\\t/\t/g;
+      $value =~ s/\\"/"/g;
+      $value =~ s/\\\\/\\/g;
+      print $value;
+    }
+  '
+}
 
 INPUT=$(cat)
 
 # Try to extract file_path from tool input
-FILE_PATH=$(echo "$INPUT" | grep -o '"file_path":"[^"]*"' | sed 's/"file_path":"//;s/"$//' || echo "")
+FILE_PATH=$(extract_json_string "file_path")
 
 # If we can't parse the file path, allow it
 if [ -z "$FILE_PATH" ]; then
@@ -43,16 +60,16 @@ esac
 
 # ── Protected directories ───────────────────────────────────────────────
 case "$PATH_LC" in
-  */.git/*)
+  .git/*|*/.git/*)
     warn "PROTECTED PATH: editing files inside .git/ can corrupt the repository." ;;
-  */secrets/*|*/private/*)
+  secrets/*|*/secrets/*|private/*|*/private/*)
     warn "PROTECTED PATH: this file is inside a secrets/private directory." ;;
 esac
 
 # ── Secrets in file content ─────────────────────────────────────────────
 # Check new_string (Edit) or content (Write) for embedded secrets
-CONTENT=$(echo "$INPUT" | grep -o '"content":"[^"]*"' | sed 's/"content":"//;s/"$//' || echo "")
-NEW_STRING=$(echo "$INPUT" | grep -o '"new_string":"[^"]*"' | sed 's/"new_string":"//;s/"$//' || echo "")
+CONTENT=$(extract_json_string "content")
+NEW_STRING=$(extract_json_string "new_string")
 CHECK_TEXT="$CONTENT$NEW_STRING"
 
 if [ -n "$CHECK_TEXT" ]; then

@@ -6,3 +6,4 @@
 ## [2026-05-23] claude | build | Upgraded careful to v2.0 — secrets scanning + file protection hooks
 ## [2026-05-23] claude | build | Published journal post at studio.menteorama.co + fixed OG tags
 ## [2026-05-23] claude | handoff | Prepared handoff for codex (test hooks) + gemini (security review)
+## [2026-05-23 10:49] codex | test | Added a 34-case hook harness, closed JSON/path bypasses in careful hooks, validated manifests, and verified local marketplace install flow.

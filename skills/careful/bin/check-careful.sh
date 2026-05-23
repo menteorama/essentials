@@ -4,10 +4,27 @@
 # Returns JSON with permissionDecision: "allow" or "ask"
 
 set -euo pipefail
+export LC_ALL=C
+
+extract_json_string() {
+  local field="$1"
+  printf '%s' "$INPUT" | FIELD="$field" perl -0ne '
+    my $field = $ENV{FIELD};
+    if (/"\Q$field\E"\s*:\s*"((?:\\.|[^"\\])*)"/s) {
+      my $value = $1;
+      $value =~ s/\\n/\n/g;
+      $value =~ s/\\r/\r/g;
+      $value =~ s/\\t/\t/g;
+      $value =~ s/\\"/"/g;
+      $value =~ s/\\\\/\\/g;
+      print $value;
+    }
+  '
+}
 
 # Read the command from tool input (passed via stdin as JSON)
 INPUT=$(cat)
-COMMAND=$(echo "$INPUT" | grep -o '"command":"[^"]*"' | sed 's/"command":"//;s/"$//' || echo "")
+COMMAND=$(extract_json_string "command")
 
 # If we can't parse the command, allow it
 if [ -z "$COMMAND" ]; then
@@ -31,7 +48,7 @@ SAFE_PATTERNS=(
 )
 
 for safe in "${SAFE_PATTERNS[@]}"; do
-  if echo "$COMMAND" | grep -q "rm.*$safe"; then
+  if echo "$COMMAND" | grep -qE "^rm(\s+-[a-zA-Z-]+)*\s+(([./[:alnum:]_-]+/)?${safe}([/[:alnum:]_.-]*)?\s*)+$"; then
     echo '{"permissionDecision":"allow"}'
     exit 0
   fi
