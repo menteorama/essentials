@@ -1,0 +1,10 @@
+{
+  "name": "menteorama-essentials",
+  "description": "5 essential Claude Code skills from Menteorama Studio: destructive command guardrails, structured debugging, product idea stress-testing, code quality principles, and AI co-creation philosophy. Free tier of the Brain Kit (43 skills).",
+  "version": "1.0.0",
+  "author": {
+    "name": "Menteorama Studio"
+  },
+  "repository": "https://github.com/menteorama/essentials",
+  "license": "MIT"
+}

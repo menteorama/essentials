@@ -1,0 +1,16 @@
+{
+  "name": "menteorama-essentials",
+  "owner": {
+    "name": "Menteorama Studio"
+  },
+  "metadata": {
+    "description": "5 essential Claude Code skills: safety guardrails, root cause debugging, product idea stress-testing, code quality principles, and AI co-creation philosophy. Free from Menteorama Studio — the full Brain Kit has 43 skills."
+  },
+  "plugins": [
+    {
+      "name": "menteorama-essentials",
+      "source": "./",
+      "description": "5 essential Claude Code skills from Menteorama Studio"
+    }
+  ]
+}
