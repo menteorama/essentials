@@ -1,6 +1,6 @@
 # Menteorama Essentials
 
-**5 free skills for Claude Code.** Safety guardrails, structured debugging, product stress-testing, code principles, and AI co-creation philosophy.
+**6 free skills for Claude Code.** Safety guardrails, structured debugging, product stress-testing, skill optimization, code principles, and AI co-creation philosophy.
 
 Built by [Menteorama Studio](https://studio.menteorama.co) — an AI integration studio that ships with Claude Code every day.
 
@@ -11,7 +11,7 @@ claude plugin marketplace add menteorama/essentials --sparse .claude-plugin
 claude plugin install menteorama-essentials@menteorama-essentials
 ```
 
-Two commands. Five skills, ready to use.
+Two commands. Six skills, ready to use.
 
 ## What's Inside
 
@@ -51,19 +51,28 @@ Turns Claude from an assistant into a peer. Challenge premises, strategic depth 
 
 **Trigger it:** "think with me", "co-create", "second brain mode"
 
-## Why These 5?
+### `/optimize` — Skill Router & Context Optimizer
 
-We use 43 skills daily at Menteorama Studio. These are the five we couldn't work without — the ones that changed how we interact with Claude Code:
+Analyzes your installed skills, maps them to 7 task types (build, debug, deploy, audit, design, strategy, memory), and generates a CLAUDE.md routing rule. Based on Meta-Harness research: **targeted skill loading beats trigger-based activation by +51 points** in benchmarks.
+
+Loading 3-4 targeted skills per task type beats loading 16+ via triggers. Less context = better outcomes.
+
+**Trigger it:** "optimize my setup", "skill audit", "too many skills"
+
+## Why These 6?
+
+We use 62 skills daily at Menteorama Studio. These are the six we couldn't work without — the ones that changed how we interact with Claude Code:
 
 - **careful** saved us from a `DROP TABLE` in production
 - **investigate** cut our debugging time in half
 - **office-hours** killed 3 ideas that would have wasted months
 - **code** eliminated "it depends" from Claude's vocabulary
 - **core** turned Claude into a co-founder, not a code monkey
+- **optimize** proved we were loading too many skills — and fixed it
 
 ## Want More?
 
-These 5 skills are the free layer of the **[Menteorama Brain Kit](https://lab.menteorama.co)** — a complete Claude Code second brain with 43 skills across 9 categories:
+These 6 skills are the free layer of the **[Menteorama Brain Kit](https://lab.menteorama.co)** — a complete Claude Code second brain with 62 skills across 9 categories:
 
 | Category | Skills | Examples |
 |----------|--------|----------|
@@ -75,7 +84,7 @@ These 5 skills are the free layer of the **[Menteorama Brain Kit](https://lab.me
 | Research | 3 | Customer research, competitor analysis |
 | AI | 2 | AI-native SEO, token optimization |
 | Development | 7 | Frontend design, Figma bridge, web audits |
-| Methodology | 9 | Superpowers (agentic dev), GSD, retros |
+| Methodology | 10 | Superpowers (agentic dev), Meta-Harness, GSD, retros |
 
 **Install the full Brain Kit:**
 ```bash
